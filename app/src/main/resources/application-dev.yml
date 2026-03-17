@@ -1,0 +1,8 @@
+server:
+  port: 8443  # 本地开发 HTTPS 端口
+
+# 自定义 HTTP 端口，仅本地开发生效
+app:
+  http:
+    port: 18080
+

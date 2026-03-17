@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!--应用名-->
+    <springProperty name="APP_NAME" source="spring.application.name" defaultValue="application"/>
+
+    <!--日志输出-->
+    <springProperty name="LOG_PATH" source="logging.path" defaultValue="logs"/>
+
+    <!--开发控制台-->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd} %d{HH:mm:ss.SSS} [%thread] %-5level [%logger{25}] [%X{traceId}][%X{userId}] - %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <!--all 业务日志-->
+    <appender name="all" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${APP_NAME}/all.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${APP_NAME}/archive/all-%d{yyyy-MM-dd}-%i.log.zip</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>512MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd} %d{HH:mm:ss.SSS} [%thread] %-5level [%logger{25}] [%X{traceId}][%X{userId}] - %msg %n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!--warn 业务日志-->
+    <appender name="warn" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${APP_NAME}/warn.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${APP_NAME}/archive/warn-%d{yyyy-MM-dd}-%i.log.zip</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>512MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd} %d{HH:mm:ss.SSS} [%thread] %-5level [%logger{25}] [%X{traceId}][%X{userId}] - %msg %n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!--error 业务日志-->
+    <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${APP_NAME}/error.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${APP_NAME}/archive/error-%d{yyyy-MM-dd}-%i.log.zip</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>512MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd} %d{HH:mm:ss.SSS} [%thread] %-5level [%logger{25}] [%X{traceId}][%X{userId}] - %msg %n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!--监控日志-->
+    <appender name="monitor" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${APP_NAME}/monitor.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${APP_NAME}/archive/monitor-%d{yyyy-MM-dd}-%i.log.zip</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>512MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd} %d{HH:mm:ss.SSS} [%thread] %-5level [%X{traceId}][%X{userId}] - %msg %n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- 连接日志，不切割文件 -->
+    <appender name="important" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_PATH}/${APP_NAME}/important.log</file>
+        <encoder>
+            <pattern>
+                %d{yyyy-MM-dd} %d{HH:mm:ss.SSS} [%thread] [%X{traceId}][%X{userId}] - %msg %n
+            </pattern>
+        </encoder>
+    </appender>
+
+
+    <logger name="org.springframework" level="INFO" />
+    <logger name="log4j.logger.net" level="ERROR"/>
+
+    <logger name="monitor">
+        <appender-ref ref="monitor"/>
+    </logger>
+
+    <logger name="important">
+        <appender-ref ref="important"/>
+    </logger>
+
+    <!-- 日志输出级别 -->
+    <root level="INFO">
+        <appender-ref ref="console" />
+        <appender-ref ref="all" />
+    </root>
+
+    <root level="WARN">
+        <appender-ref ref="console" />
+        <appender-ref ref="warn" />
+    </root>
+
+    <root level="ERROR">
+        <appender-ref ref="console" />
+        <appender-ref ref="error" />
+    </root>
+
+</configuration>
