@@ -1,0 +1,60 @@
+# === Java / Maven ===
+**/target/
+*.class
+*.jar
+*.war
+*.ear
+dependency-reduced-pom.xml
+
+# === Logs / runtime generated ===
+**/logs/
+*.log
+*.pid
+*.hprof
+hs_err_pid*
+
+# === IntelliJ IDEA ===
+**/.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# === Eclipse ===
+**/.project
+**/.classpath
+**/.settings/
+
+# === VS Code ===
+**/.vscode/
+
+# === OS files ===
+.DS_Store
+**/.DS_Store
+Thumbs.db
+**/Thumbs.db
+
+# === Secrets / keys / certs (do NOT commit) ===
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*keystore*
+*secret*
+*password*
+**/*password*.txt
+*.env
+**/*.env
+**/.env.*
+**/application-local.yml
+**/application-*.local.yml
+**/application-out.yml
+**/*application-out*.yml
+
+# === Common temp / backups ===
+*.swp
+*.swo
+*~
+*.tmp

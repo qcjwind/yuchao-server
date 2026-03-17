@@ -1,0 +1,117 @@
+
+spring:
+  application:
+    name: yuchao
+  # 解决swagger兼容性问题
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+      resources:
+  web:
+    resources:
+      cache:
+        period: 60  # 缓存时间（秒），建议生产环境设置（如1小时）
+        cachecontrol:
+          max-age: 60s  # 等效于period，更推荐的写法（Spring Boot 2.2+）
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  # DataSource Config
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://47.109.88.197:3306/yuchao?serverTimezone=Asia/Shanghai&useSSL=false&useUnicode=true&autoReconnect=true&characterEncoding=utf8&failOverReadOnly=false
+#    username: root
+#    password: 12345687
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/yuchao?serverTimezone=Asia/Shanghai&useSSL=false&useUnicode=true&autoReconnect=true&characterEncoding=utf8&failOverReadOnly=false}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+  hikari:
+    # 最大连接数（根据并发需求调整），不建议超过50
+    maximum-pool-size: 20
+    # 最小空闲连接数（建议小于 maximum-pool-size）
+    minimum-idle: 5
+    # 空闲超时 5 分钟
+    idle-timeout: 300000
+    # 连接超时 20 秒
+    connection-timeout: 20000
+  main:
+    allow-circular-references: true
+
+
+logging:
+  level:
+    ROOT: INFO
+    com.github.binarywang.wxpay: debug
+  path: ${LOG_PATH:./logs}
+
+# application.yml（生产环境默认端口）
+server:
+  port: 443  # 生产 HTTPS 端口
+  ssl:
+    key-store: ${SSL_KEY_STORE:classpath:jks/yuchao2025.zszlchina.com.jks}  # 证书路径（resources 目录下）
+    key-store-password: ${SSL_KEY_STORE_PASSWORD:}         # 证书库密码（与生成时一致）
+    key-store-type: ${SSL_KEY_STORE_TYPE:JKS}                # 证书类型（JKS 或 PKCS12）
+  tomcat:
+    # 1. Worker 线程池配置
+    threads:
+      # 最大工作线程数（默认 200），超过此值后新请求进入队列
+      max: 400
+      # 核心线程数（默认 10），线程池保持的最小活跃线程数
+      min-spare: 10
+      # 线程最大空闲时间，超过此时间的空闲线程会被销毁
+      max-idle-time: 60s
+    # 2. 请求队列配置
+    # 最大连接数（默认 10000），超过此值后新连接可能被拒绝
+    max-connections: 10000
+    # 队列容量（默认 100），核心线程满后，请求会先进入此队列
+    accept-count: 100
+    # 3. Acceptor 线程配置（接收连接的线程）
+    # Acceptor 线程数（默认 1），可根据 CPU 核心数调整
+    additional-threads: 1
+
+# 开启mysql日志
+#mybatis-plus:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+wx:
+  miniapp:
+    appid: wx5c89ad708794b0bc
+    appsecret: ${WX_MINIAPP_APPSECRET:}
+    aes-key: ${WX_MINIAPP_AES_KEY:}
+    msgDataFormat: JSON
+    token: ${WX_MINIAPP_TOKEN:}
+  pay:
+    appId: wx5c89ad708794b0bc
+    mchId: 1729246452
+    # A281470E89F4722DA84EE53DA68B95E0
+    # PUB_KEY_ID_0117292464522025100900191967002802
+    apiV3Key: ${WX_PAY_API_V3_KEY:}
+    certSerialNo: ${WX_PAY_CERT_SERIAL_NO:}
+    privateKeyPath: ${WX_PAY_PRIVATE_KEY_PATH:classpath:paycert/apiclient_key.pem}
+    privateCertPath: ${WX_PAY_PRIVATE_CERT_PATH:classpath:paycert/apiclient_cert.pem}
+    publicKeyPath: ${WX_PAY_PUBLIC_KEY_PATH:classpath:paycert/pub_key.pem}
+    payNotifyUrl: https://yuchao2025.zszlchina.com/wx/pay/notify/order
+    refundNotifyUrl: https://yuchao2025.zszlchina.com/wx/pay/notify/refund
+
+
+oss:
+  endpoint: ${OSS_ENDPOINT:oss-cn-chengdu.aliyuncs.com}
+  bucketName: ${OSS_BUCKET_NAME:}
+  accessKeyId: ${OSS_ACCESS_KEY_ID:}
+  accessKeySecret: ${OSS_ACCESS_KEY_SECRET:}
+  ossStsRoleArn: ${OSS_STS_ROLE_ARN:}
+
+
+gate:
+  nameVerify:
+    url: http://smrz.zszlchina.com/enroll-server/api/realName/verify
+    token: ${GATE_NAMEVERIFY_TOKEN:}
+
+
+app:
+  config:
+    # schema 前缀
+    qrcodeSchema: https://yuchao2025.zszlchina.com/gift?type=gift&ticketBid=
+
