@@ -21,14 +21,14 @@ public class BuyTicketRequest extends BaseAppRequest {
     @ApiModelProperty("幂等，前端生成UUID")
     private String requestNo;
 
-//    @Valid
-//    @NotEmpty
+    //    @Valid
+    //    @NotEmpty
     @ApiModelProperty("购票列表-json")
     private String listJsonStr;
 
-//    @Valid
-//    @NotEmpty
-//    @Size(max = 8)
+    //    @Valid
+    //    @NotEmpty
+    //    @Size(max = 8)
     @ApiModelProperty("购票列表，与listJsonStr 2选一，优先取值listJsonStr")
     private List<BuyTicket> list;
 
@@ -50,5 +50,8 @@ public class BuyTicketRequest extends BaseAppRequest {
 
         @ApiModelProperty("是否购票人自己")
         private boolean mySelf;
+
+        @ApiModelProperty("座位信息")
+        private String ticket;
     }
 }

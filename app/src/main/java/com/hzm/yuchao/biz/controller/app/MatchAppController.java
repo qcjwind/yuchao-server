@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hzm.yuchao.biz.controller.app.req.MatchListRequest;
 import com.hzm.yuchao.biz.controller.app.resp.MatchInfoVO;
 import com.hzm.yuchao.biz.controller.app.resp.MatchListVO;
+import com.hzm.yuchao.biz.controller.app.resp.TicketSeatListVO;
 import com.hzm.yuchao.biz.enums.SkuStatusEnum;
 import com.hzm.yuchao.biz.enums.TicketTypeEnum;
 import com.hzm.yuchao.biz.mapper.MatchMapper;
@@ -17,6 +18,7 @@ import com.hzm.yuchao.biz.service.MatchService;
 import com.hzm.yuchao.biz.service.SkuService;
 import com.hzm.yuchao.biz.service.TicketService;
 import com.hzm.yuchao.biz.service.VenueService;
+import com.hzm.yuchao.simple.base.ListResponse;
 import com.hzm.yuchao.simple.base.PageResponse;
 import com.hzm.yuchao.simple.base.SimpleResponse;
 import com.hzm.yuchao.simple.constant.Constants;
@@ -75,13 +77,13 @@ public class MatchAppController {
 
         IPage<MatchListVO> pageData = matchMapper.selectByPage(page, request);
 
-//        如果模型转换，可以用这个转。
-//        IPage<MatchInfoVO> resultPage = pageData.convert(t -> {
-//            MatchInfoVO matchInfoVO = new MatchInfoVO();
-//            matchInfoVO.setMatch(t);
-//
-//            return matchInfoVO;
-//        });
+        //        如果模型转换，可以用这个转。
+        //        IPage<MatchInfoVO> resultPage = pageData.convert(t -> {
+        //            MatchInfoVO matchInfoVO = new MatchInfoVO();
+        //            matchInfoVO.setMatch(t);
+        //
+        //            return matchInfoVO;
+        //        });
 
         return PageResponse.ok(pageData);
     }
@@ -127,6 +129,17 @@ public class MatchAppController {
         }
 
         return SimpleResponse.ok(new MatchInfoVO(matchDO, venueDO, list, ticketDO));
+    }
+
+    @ApiOperation("获取座位列表")
+    @PostMapping("/tick/list")
+    @RateLimit(qps = Constants.QPS_SIMPLE)
+    public ListResponse<TicketSeatListVO> info(Long matchId) {
+        LambdaQueryWrapper<TicketDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(TicketDO::getMatchId, matchId);
+        queryWrapper.isNull(TicketDO::getBuyerId);
+        List<TicketDO> ticketList = ticketService.list(queryWrapper);
+        return ListResponse.ok(TicketSeatListVO.build(ticketList));
     }
 
 }
