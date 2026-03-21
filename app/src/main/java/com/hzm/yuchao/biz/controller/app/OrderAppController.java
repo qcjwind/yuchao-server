@@ -374,6 +374,7 @@ public class OrderAppController {
         if (matchDO == null) {
             return SimpleResponse.fail("赛事不存在");
         }
+
         boolean needIdForTicket = matchDO.getNeedIdForTicket() == BooleanEnum.Y;
 
         for (BuyTicketRequest.BuyTicket buyTicket : buyTicketRequest.getList()) {

@@ -32,6 +32,9 @@ public class BuyTicketRequest extends BaseAppRequest {
     @ApiModelProperty("购票列表，与listJsonStr 2选一，优先取值listJsonStr")
     private List<BuyTicket> list;
 
+    @ApiModelProperty("位置信息")
+    private Long[] tickets;
+
     @Data
     public static class BuyTicket {
 
@@ -51,7 +54,5 @@ public class BuyTicketRequest extends BaseAppRequest {
         @ApiModelProperty("是否购票人自己")
         private boolean mySelf;
 
-        @ApiModelProperty("座位信息")
-        private String ticket;
     }
 }

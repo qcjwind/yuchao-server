@@ -13,13 +13,28 @@ import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.hzm.yuchao.biz.controller.app.req.BuyTicketRequest;
 import com.hzm.yuchao.biz.dto.SubAreaStockDTO;
-import com.hzm.yuchao.biz.enums.*;
+import com.hzm.yuchao.biz.enums.BooleanEnum;
+import com.hzm.yuchao.biz.enums.MatchStatusEnum;
+import com.hzm.yuchao.biz.enums.OrderStatusEnum;
+import com.hzm.yuchao.biz.enums.SkuStatusEnum;
+import com.hzm.yuchao.biz.enums.TicketSaleStatusEnum;
+import com.hzm.yuchao.biz.enums.TicketTypeEnum;
 import com.hzm.yuchao.biz.mapper.OrderMapper;
 import com.hzm.yuchao.biz.mapper.SkuMapper;
 import com.hzm.yuchao.biz.mapper.TicketMapper;
-import com.hzm.yuchao.biz.model.*;
+import com.hzm.yuchao.biz.model.MatchDO;
+import com.hzm.yuchao.biz.model.OrderDO;
+import com.hzm.yuchao.biz.model.SkuDO;
+import com.hzm.yuchao.biz.model.TicketDO;
+import com.hzm.yuchao.biz.model.UserDO;
 import com.hzm.yuchao.biz.outter.wechat.config.WxPayProperties;
-import com.hzm.yuchao.biz.service.*;
+import com.hzm.yuchao.biz.service.MatchService;
+import com.hzm.yuchao.biz.service.OrderService;
+import com.hzm.yuchao.biz.service.PayService;
+import com.hzm.yuchao.biz.service.SkuService;
+import com.hzm.yuchao.biz.service.TicketService;
+import com.hzm.yuchao.biz.service.UserService;
+import com.hzm.yuchao.biz.service.VenueService;
 import com.hzm.yuchao.biz.utils.ConsecutiveTicketUtils;
 import com.hzm.yuchao.simple.BizException;
 import com.hzm.yuchao.simple.ThreadService;
@@ -302,18 +317,33 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
         orderDO.setSkuName(skuDO.getSkuName());
         this.save(orderDO);
 
-        if (buyTicketRequest.getList().size() == 1) {
-            // 极速出票
-            TicketDO ticketDO = getOne(orderDO, skuDO, buyTicketRequest.getList().get(0), null);
-
-            if (!needPay) {
-                ticketService.pushPerson(matchDO, ticketDO.getId());
+        //================新增逻辑，指定位置
+        if (null != buyTicketRequest.getTickets() && buyTicketRequest.getTickets().length > 0) {
+            if (buyTicketRequest.getTickets().length != buyTicketRequest.getList().size()) {
+                throw new BizException("座位数与人数不匹配");
+            }
+            //================新增逻辑，指定位置===========
+            for (int i = 0; i < buyTicketRequest.getTickets().length; i++) {
+                TicketDO ticketDO = getOne(orderDO, skuDO, buyTicketRequest.getList().get(i), buyTicketRequest.getTickets()[i]);
+                if (!needPay) {
+                    ticketService.pushPerson(matchDO, ticketDO.getId());
+                }
             }
         } else {
-            List<TicketDO> multi = getMulti(orderDO, skuDO, buyTicketRequest.getList());
-            if (!needPay) {
-                for (TicketDO ticketDO : multi) {
+            //以前逻辑
+            if (buyTicketRequest.getList().size() == 1) {
+                // 极速出票
+                TicketDO ticketDO = getOne(orderDO, skuDO, buyTicketRequest.getList().get(0), null);
+
+                if (!needPay) {
                     ticketService.pushPerson(matchDO, ticketDO.getId());
+                }
+            } else {
+                List<TicketDO> multi = getMulti(orderDO, skuDO, buyTicketRequest.getList());
+                if (!needPay) {
+                    for (TicketDO ticketDO : multi) {
+                        ticketService.pushPerson(matchDO, ticketDO.getId());
+                    }
                 }
             }
         }
@@ -425,7 +455,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
 
             SubAreaStockDTO stockDTO = getRandomElement(subAreaStockList);
 
-            log.info("【第{}次出票】尝试从 {}区-{}排 进行出票。购票张数: {}, 当前库存：{}。", i, stockDTO.getSeatRow(), stockDTO.getSeatRow(), ticketNum, stockDTO.getStock());
+            log.info("【第{}次出票】尝试从 {}区-{}排 进行出票。购票张数: {}, 当前库存：{}。", i, stockDTO.getSeatRow(), stockDTO.getSeatRow(), ticketNum,
+                    stockDTO.getStock());
 
             // 查询出该sku下所有未售的票
             LambdaQueryWrapper<TicketDO> queryWrapper = new LambdaQueryWrapper<>();
@@ -474,7 +505,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
         return getNonConsecutiveSeats(orderDO, skuDO, buyTicketList);
     }
 
-
     public static <T> T getRandomElement(List<T> list) {
         // 处理空列表或null的情况
         if (list == null || list.isEmpty()) {
@@ -487,7 +517,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
         // 返回随机索引对应的元素
         return list.get(randomIndex);
     }
-
 
     // 获取非连座座位
     public List<TicketDO> getNonConsecutiveSeats(OrderDO orderDO, SkuDO skuDO, List<BuyTicketRequest.BuyTicket> buyTicketList) {

@@ -23,6 +23,7 @@ public class TicketSeatListVO {
         for (TicketDO ticketDO : ticketList) {
             TicketSeatListVO vo = new TicketSeatListVO();
             vo.setBid(ticketDO.getBid());
+            vo.setTicket(ticketDO.getId());
             vo.setArea(ticketDO.getArea());
             vo.setSubArea(ticketDO.getSubArea());
             vo.setSeatRow(ticketDO.getSeatNo());
@@ -35,6 +36,9 @@ public class TicketSeatListVO {
         }
         return result;
     }
+
+    @ApiModelProperty("订单提交座位信息")
+    private Long ticket;
 
     @ApiModelProperty("业务主键，用于生成二维码")
     private String bid;
