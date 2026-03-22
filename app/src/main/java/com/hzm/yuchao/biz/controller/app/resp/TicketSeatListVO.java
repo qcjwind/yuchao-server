@@ -26,7 +26,8 @@ public class TicketSeatListVO {
             vo.setTicket(ticketDO.getId());
             vo.setArea(ticketDO.getArea());
             vo.setSubArea(ticketDO.getSubArea());
-            vo.setSeatRow(ticketDO.getSeatNo());
+            vo.setSeatRow(ticketDO.getSeatRow());
+            vo.setSeatNo(ticketDO.getSeatNo());
             vo.setPrice(ticketDO.getPrice());
             vo.setTicketType(ticketDO.getTicketType());
             vo.setSaleStatus(ticketDO.getSaleStatus());
