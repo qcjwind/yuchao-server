@@ -137,7 +137,7 @@ public class MatchAppController {
     public ListResponse<TicketSeatListVO> info(Long matchId) {
         LambdaQueryWrapper<TicketDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TicketDO::getMatchId, matchId);
-        queryWrapper.isNull(TicketDO::getBuyerId);
+        //queryWrapper.isNull(TicketDO::getBuyerId);
         List<TicketDO> ticketList = ticketService.list(queryWrapper);
         return ListResponse.ok(TicketSeatListVO.build(ticketList));
     }
